@@ -17,8 +17,6 @@ class Terminal
         } else {
             $this->context[] = $dirName;
         }
-
-        $this->getStructureFromContext();
     }
 
     /**
