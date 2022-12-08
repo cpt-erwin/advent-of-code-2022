@@ -26,37 +26,19 @@ foreach ($commandList as $command) {
     }
 }
 
-$rootDir = new \App\Dir('/');
-
 $terminal = new Terminal();
-
 foreach ($commands as $command) {
-    if ($command[0] === 'cd') {
-        $terminal->cd($command[1]);
-    } elseif ($command[0] === 'ls') {
-        foreach ($terminal->ls($command[1]) as $item) {
-            $currentDir = $rootDir;
-            foreach ($terminal->getContext() as $dirName) {
-                if ($currentDir->getDirByName($dirName) === null) {
-                    $newDir = new Dir($dirName);
-                    $currentDir->addDir($newDir);
-                    $currentDir = $newDir;
-                } else {
-                    $currentDir = $currentDir->getDirByName($dirName);
-                }
-            }
+    switch ($command[0]) {
+        case 'cd':
+            $terminal->cd($command[1]);
+            break;
 
-            switch ($item::class) {
-                case Dir::class:
-                    $currentDir->addDir($item);
-                    break;
-                case File::class:
-                    $currentDir->addFile($item);
-                    break;
-                default:
-                    throw new Exception('Unexpected item!');
-            }
-        }
+        case 'ls':
+            $terminal->ls($command[1]);
+            break;
+
+        default:
+            throw new Exception('Unexpected command ' . $command[1]);
     }
 }
 
@@ -85,6 +67,8 @@ function printStructure(Dir $dir, int $offset = 0)
         }
     }
 }
+
+$rootDir = $terminal->getStructure();
 
 printStructure($rootDir);
 echo "\n";

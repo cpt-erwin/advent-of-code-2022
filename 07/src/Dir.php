@@ -73,12 +73,12 @@ class Dir
     /**
      * @param string $name
      *
-     * @return Dir|null
+     * @return Dir
      */
-    public function getDirByName(string $name): ?Dir
+    public function &getDirByName(string $name): ?Dir
     {
         if (!array_key_exists($name, $this->dirs)) {
-            return null;
+            throw new Exception('Dir not found!');
         }
 
         return $this->dirs[$name];
@@ -129,5 +129,15 @@ class Dir
             $size += $item->getSize();
         }
         return $size;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function hasDirByName(string $name): bool
+    {
+        return array_key_exists($name, $this->dirs);
     }
 }

@@ -8,7 +8,7 @@ class Terminal
 {
     private array $context = [];
 
-    private array $structure = [];
+    private ?Dir $structure = null;
 
     public function cd(string $dirName): void
     {
@@ -34,7 +34,9 @@ class Terminal
             if ($record[0] === 'dir') {
                 continue;
             }
-            $contextualStructure[] = new File($record[1], (int)$record[0]);
+            $contextualStructure->addFile(
+                new File($record[1], (int)$record[0])
+            );
         }
     }
 
@@ -47,26 +49,28 @@ class Terminal
     }
 
     /**
-     * @return array
+     * @return Dir|null
      */
-    public function getStructure(): array
+    public function getStructure(): ?Dir
     {
         return $this->structure;
     }
 
-    private function &getStructureFromContext(): array
+    private function &getStructureFromContext(): Dir
     {
         $structure = &$this->structure;
         foreach ($this->context as $contextDirName) {
-            if (empty($structure)) {
-                $structure[$contextDirName] = [];
+            if ($structure === null) {
+                $structure = new Dir($contextDirName);
                 continue;
             }
 
-            if (!array_key_exists($contextDirName, $structure)) {
-                $structure[$contextDirName] = [];
+            if (!$structure->hasDirByName($contextDirName)) {
+                $structure->addDir(
+                    new Dir($contextDirName)
+                );
             }
-            $structure = &$structure[$contextDirName];
+            $structure = &$structure->getDirByName($contextDirName);
         }
 
         return $structure;
