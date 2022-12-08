@@ -57,9 +57,11 @@ class Terminal
     private function &getStructureFromContext(): Dir
     {
         $structure = &$this->structure;
-        foreach ($this->context as $contextDirName) {
-            if ($structure === null) {
-                $structure = new Dir($contextDirName);
+        foreach ($this->context as $index => $contextDirName) {
+            if ($index === 0) {
+                if ($structure === null) {
+                    $this->structure = new Dir($contextDirName);
+                }
                 continue;
             }
 
