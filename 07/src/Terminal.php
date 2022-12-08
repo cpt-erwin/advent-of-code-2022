@@ -8,6 +8,8 @@ class Terminal
 {
     private array $context = [];
 
+    private array $structure = [];
+
     public function cd(string $dirName): void
     {
         if ($dirName === '..') {
@@ -15,26 +17,25 @@ class Terminal
         } else {
             $this->context[] = $dirName;
         }
+
+        $this->getStructureFromContext();
     }
 
     /**
      * @param string[] $structure
      *
-     * @return Dir[]|File[]
+     * @return void
      */
-    public function ls(array $structure): array
+    public function ls(array $structure): void
     {
-        $result = [];
+        $contextualStructure = &$this->getStructureFromContext();
         foreach ($structure as $item) {
             $record = explode(' ', $item);
             if ($record[0] === 'dir') {
-                $result[] = new Dir($record[1]);
                 continue;
             }
-            $result[] = new File($record[1], (int)$record[0]);
+            $contextualStructure[] = new File($record[1], (int)$record[0]);
         }
-
-        return $result;
     }
 
     /**
@@ -43,5 +44,31 @@ class Terminal
     public function getContext(): array
     {
         return $this->context;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStructure(): array
+    {
+        return $this->structure;
+    }
+
+    private function &getStructureFromContext(): array
+    {
+        $structure = &$this->structure;
+        foreach ($this->context as $contextDirName) {
+            if (empty($structure)) {
+                $structure[$contextDirName] = [];
+                continue;
+            }
+
+            if (!array_key_exists($contextDirName, $structure)) {
+                $structure[$contextDirName] = [];
+            }
+            $structure = &$structure[$contextDirName];
+        }
+
+        return $structure;
     }
 }
