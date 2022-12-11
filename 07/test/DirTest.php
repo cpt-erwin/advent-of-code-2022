@@ -227,23 +227,4 @@ class DirTest extends \PHPUnit\Framework\TestCase
             $dir->getDirs(true)
         );
     }
-
-    public function testGetDirByName()
-    {
-        $dir = new Dir('/');
-        $dir->addDir(new Dir('1'));
-        $dir->addDir(new Dir('test'));
-        $dir->addDir(new Dir('dir'));
-        $dir->addDir(new Dir('four'));
-        $dir->addDir(new Dir('end'));
-
-        self::assertInstanceOf(
-            Dir::class,
-            $dir->getDirByName('four')
-        );
-
-        self::assertNull(
-            $dir->getDirByName('nonExistingDir')
-        );
-    }
 }

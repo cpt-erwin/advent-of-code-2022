@@ -52,7 +52,10 @@ class TerminalTest extends \PHPUnit\Framework\TestCase
         ];
 
         $terminal = new Terminal();
-        $output = $terminal->ls($structure);
+        $terminal->cd('root');
+        $terminal->ls($structure);
+
+        $output = $terminal->getFilesystem()->getDirFromContext($terminal->getContext())->getContent();
 
         foreach ($output as $index => $item) {
             $record = explode(' ', $structure[$index]);

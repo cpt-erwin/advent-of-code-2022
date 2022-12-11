@@ -71,20 +71,6 @@ class Dir
     }
 
     /**
-     * @param string $name
-     *
-     * @return Dir
-     */
-    public function &getDirByName(string $name): ?Dir
-    {
-        if (!array_key_exists($name, $this->dirs)) {
-            throw new Exception('Dir not found!');
-        }
-
-        return $this->dirs[$name];
-    }
-
-    /**
      * @param bool $recursively
      *
      * @return Dir[]
@@ -129,15 +115,5 @@ class Dir
             $size += $item->getSize();
         }
         return $size;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function hasDirByName(string $name): bool
-    {
-        return array_key_exists($name, $this->dirs);
     }
 }
