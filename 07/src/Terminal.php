@@ -8,7 +8,13 @@ class Terminal
 {
     private array $context = [];
 
-    private ?Dir $structure = null;
+    protected Filesystem $filesystem;
+
+    public function __construct()
+    {
+        $this->filesystem = new Filesystem();
+    }
+
 
     public function cd(string $dirName): void
     {
@@ -26,15 +32,20 @@ class Terminal
      */
     public function ls(array $structure): void
     {
-        $contextualStructure = &$this->getStructureFromContext();
         foreach ($structure as $item) {
             $record = explode(' ', $item);
+            $contextualDir = $this->filesystem->getDirFromContext($this->context);
             if ($record[0] === 'dir') {
-                continue;
+                $contextualDir->addDir(
+                    $this->filesystem->getDirFromContext(
+                        array_merge($this->context, [$record[1]])
+                    )
+                );
+            } else {
+                $contextualDir->addFile(
+                    new File($record[1], (int)$record[0])
+                );
             }
-            $contextualStructure->addFile(
-                new File($record[1], (int)$record[0])
-            );
         }
     }
 
@@ -47,32 +58,10 @@ class Terminal
     }
 
     /**
-     * @return Dir|null
+     * @return Filesystem
      */
-    public function getStructure(): ?Dir
+    public function getFilesystem(): Filesystem
     {
-        return $this->structure;
-    }
-
-    private function &getStructureFromContext(): Dir
-    {
-        $structure = &$this->structure;
-        foreach ($this->context as $index => $contextDirName) {
-            if ($index === 0) {
-                if ($structure === null) {
-                    $this->structure = new Dir($contextDirName);
-                }
-                continue;
-            }
-
-            if (!$structure->hasDirByName($contextDirName)) {
-                $structure->addDir(
-                    new Dir($contextDirName)
-                );
-            }
-            $structure = &$structure->getDirByName($contextDirName);
-        }
-
-        return $structure;
+        return $this->filesystem;
     }
 }

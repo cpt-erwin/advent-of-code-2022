@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Dir;
-use App\File;
 use App\Terminal;
 
 require_once 'vendor/autoload.php';
@@ -42,43 +40,8 @@ foreach ($commands as $command) {
     }
 }
 
-function printOffset(int $numOfLoops)
-{
-    for ($i = 0; $i < $numOfLoops; $i++) {
-        echo "  ";
-    }
-}
-
-function printStructure(Dir $dir, int $offset = 0)
-{
-    printOffset($offset);
-    print_r('- ' . $dir->getName() . ' (dir, ' . $dir->getSize() . ')');
-    echo "\n";
-    foreach ($dir->getContent() as $item) {
-        switch ($item::class) {
-            case Dir::class:
-                printStructure($item, $offset + 1);
-                break;
-            case File::class:
-                printOffset($offset + 1);
-                print_r('- ' . $item->getName() . ' (file, ' . $item->getSize() . ')');
-                echo "\n";
-                break;
-        }
-    }
-}
-
-$rootDir = $terminal->getStructure();
-
-printStructure($rootDir);
-echo "\n";
-echo "\n";
-
-print_r($rootDir->getName() . ' - ' . $rootDir->getSize());
-echo "\n";
-
 $sum = 0;
-foreach ($rootDir->getDirs(true) as $dir) {
+foreach ($terminal->getFilesystem()->getDirectories() as $dir) {
     print_r($dir->getName() . ' - ' . $dir->getSize());
     echo "\n";
 
